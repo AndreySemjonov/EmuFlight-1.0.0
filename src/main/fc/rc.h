@@ -36,7 +36,9 @@ typedef enum {
 #define RC_SMOOTHING_AUTO_FACTOR_MIN 0
 #define RC_SMOOTHING_AUTO_FACTOR_MAX 50
 #endif
-
+#ifdef USE_GYRO_IMUF9001
+extern volatile bool isSetpointNew;
+#endif
 void processRcCommand(void);
 float getSetpointRate(int axis);
 uint32_t getSetpointRateInt(int axis);
@@ -57,8 +59,6 @@ float applyCurve(int axis, float deflection);
 uint32_t getRcFrameNumber();
 float getRcCurveSlope(int axis, float deflection);
 void updateRcRefreshRate(timeUs_t currentTimeUs);
-#ifdef USE_GYRO_IMUF9001
-extern volatile bool isSetpointNew;
-#endif
+
 uint16_t getCurrentRxRefreshRate(void);
 float rateDynamics(float rcCommand, int axis);

@@ -222,7 +222,6 @@ static   uint8_t  imuf_custom_buff[IMUF_CUSTOM_BUFF_LENGTH];
 static   uint32_t imuf_buff_ptr = 0;
 static   uint32_t imuf_checksum = 0;
 static   int      imuf_bin_safe = 0;
-
 #endif
 
 static const char* const emptyName = "-";
@@ -3587,6 +3586,16 @@ static void cliBootloader(const char *cmdName, char *cmdline)
     cliRebootEx(rebootTarget);
 }
 
+static void cliDebug(char *cmdline)
+{
+    UNUSED(cmdline);
+
+    for (int x=0;x<4;x++)
+    {
+        cliPrintLinef("DEBUG %d:%d", x, debug[x]);
+    }
+}
+
 #ifdef MSP_OVER_CLI
 static void hex2byte(char *string, uint8_t *output)
 {
@@ -3609,7 +3618,6 @@ static void cliImufBootloaderMode(char *cmdline)
         cliPrintLine("FAIL");
     }
 }
-
 
 static void cliImufLoadBin(char *cmdline)
 {
@@ -6608,6 +6616,7 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("imufloadbin", NULL, NULL, cliImufLoadBin),
     CLI_COMMAND_DEF("imufflashbin", NULL, NULL, cliImufFlashBin),
 #endif
+    CLI_COMMAND_DEF("debug", NULL, NULL, cliDebug),
 #ifdef MSP_OVER_CLI
     CLI_COMMAND_DEF("msp", NULL, NULL, cliMsp),
 #endif

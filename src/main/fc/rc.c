@@ -54,8 +54,6 @@
 #include "sensors/battery.h"
 #include "sensors/gyro.h"
 
-#include "rc.h"
-
 #ifdef USE_GYRO_IMUF9001
     volatile bool isSetpointNew;
 #endif
@@ -111,6 +109,11 @@ uint32_t getRcFrameNumber()
 float getSetpointRate(int axis)
 {
     return setpointRate[axis];
+}
+
+uint32_t getSetpointRateInt(int axis)
+{
+    return setpointRateInt[axis];
 }
 
 float getRcDeflection(int axis)
