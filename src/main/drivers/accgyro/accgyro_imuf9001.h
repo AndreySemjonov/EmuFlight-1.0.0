@@ -18,6 +18,7 @@
 #pragma once
 
 #include "sensors/gyro.h"
+#include "drivers/bus.h"
 
 uint8_t imuf9001SpiDetect(const gyroDev_t *bus);
 

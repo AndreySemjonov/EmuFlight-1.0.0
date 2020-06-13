@@ -42,6 +42,7 @@
 #include "drivers/system.h"
 #include "drivers/time.h"
 #include "drivers/usb_msc.h"
+#include "drivers/accgyro/accgyro_mpu.h"
 
 #include "msc/usbd_storage.h"
 
@@ -140,6 +141,10 @@ void systemResetToMsc(int timezoneOffsetMinutes)
 
 void systemResetFromMsc(void)
 {
+    if (mpuResetFn) {
+        mpuResetFn();
+    }
+
     persistentObjectWrite(PERSISTENT_OBJECT_RESET_REASON, RESET_NONE);
     __disable_irq();
     NVIC_SystemReset();

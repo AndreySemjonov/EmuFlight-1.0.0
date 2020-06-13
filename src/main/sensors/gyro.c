@@ -401,6 +401,7 @@ static FAST_CODE FAST_CODE_NOINLINE void gyroUpdateSensor(gyroSensor_t *gyroSens
     }
 #endif
     gyroSensor->gyroDev.dataReady = false;
+    
 #ifdef USE_GYRO_IMUF9001
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
         // NOTE: this branch optimized for when there is no gyro debugging, ensure it is kept in step with non-optimized branch
@@ -503,7 +504,7 @@ FAST_CODE void gyroUpdate(void)
         gyro.sampleCount++;
     }
 }
-
+#ifndef USE_GYRO_IMUF9001
 #define GYRO_FILTER_FUNCTION_NAME filterGyro
 #define GYRO_FILTER_DEBUG_SET(mode, index, value) do { UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
 #define GYRO_FILTER_AXIS_DEBUG_SET(axis, mode, index, value) do { UNUSED(axis); UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
@@ -519,6 +520,7 @@ FAST_CODE void gyroUpdate(void)
 #undef GYRO_FILTER_FUNCTION_NAME
 #undef GYRO_FILTER_DEBUG_SET
 #undef GYRO_FILTER_AXIS_DEBUG_SET
+#endif
 
 #ifdef USE_GYRO_DATA_ANALYSE
 static void dynamicGyroNotchFiltersUpdate(gyro_t *gyro) {
@@ -537,11 +539,13 @@ static void dynamicGyroNotchFiltersUpdate(gyro_t *gyro) {
 
 FAST_CODE void gyroFiltering(timeUs_t currentTimeUs)
 {
+#ifndef USE_GYRO_IMUF9001
     if (gyro.gyroDebugMode == DEBUG_NONE) {
         filterGyro();
     } else {
         filterGyroDebug();
     }
+#endif //USE_GYRO_IMUF9001
 #ifdef USE_GYRO_DATA_ANALYSE
     if (featureIsEnabled(FEATURE_DYNAMIC_FILTER)) {
        gyroDataAnalyse(&gyro.gyroAnalyseState);

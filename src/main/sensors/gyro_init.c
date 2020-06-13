@@ -295,12 +295,19 @@ void gyroInitSensor(gyroSensor_t *gyroSensor, const gyroDeviceConfig_t *config)
     gyroSensor->gyroDev.gyroAlign = config->alignment;
     buildRotationMatrixFromAlignment(&config->customAlignment, &gyroSensor->gyroDev.rotationMatrix);
     gyroSensor->gyroDev.mpuIntExtiTag = config->extiTag;
+#if defined(USE_GYRO_IMUF9001)
+    mpuResetFn = gyroSensor->gyroDev.mpuConfiguration.resetFn; // must be set after mpuDetect
+#endif
     gyroSensor->gyroDev.hardware_lpf = gyroConfig()->gyro_hardware_lpf;
 
     // The targetLooptime gets set later based on the active sensor's gyroSampleRateHz and pid_process_denom
     gyroSensor->gyroDev.gyroSampleRateHz = gyroSetSampleRate(&gyroSensor->gyroDev);
     gyroSensor->gyroDev.initFn(&gyroSensor->gyroDev);
-
+#ifndef USE_GYRO_IMUF9001
+    if (gyroConfig()->gyro_align != ALIGN_DEFAULT) {
+        gyroSensor->gyroDev.gyroAlign = gyroConfig()->gyro_align;
+    }
+#endif //!USE_GYRO_IMUF9001
     // As new gyros are supported, be sure to add them below based on whether they are subject to the overflow/inversion bug
     // Any gyro not explicitly defined will default to not having built-in overflow protection as a safe alternative.
     switch (gyroSensor->gyroDev.gyroHardware) {

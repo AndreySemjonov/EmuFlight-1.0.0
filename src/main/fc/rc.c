@@ -67,7 +67,9 @@ static float rawSetpoint[XYZ_AXIS_COUNT];
 static float rawDeflection[XYZ_AXIS_COUNT];
 static float oldRcCommand[XYZ_AXIS_COUNT];
 #endif
-static float setpointRate[3], rcDeflection[3], rcDeflectionAbs[3];
+static float rcDeflection[3], rcDeflectionAbs[3];
+static volatile float setpointRate[3];
+static volatile uint32_t setpointRateInt[3];
 static float throttlePIDAttenuation;
 static bool reverseMotors = false;
 static applyRatesFn *applyRates;
@@ -271,6 +273,7 @@ static void calculateSetpointRate(int axis)
     setpointRate[axis] = constrainf(angleRate, -1.0f * currentControlRateProfile->rate_limit[axis], 1.0f * currentControlRateProfile->rate_limit[axis]);
 
     DEBUG_SET(DEBUG_ANGLERATE, axis, angleRate);
+    memcpy((uint32_t*)&setpointRateInt[axis], (uint32_t*)&setpointRate[axis], sizeof(float));
 }
 
 static void scaleRcCommandToFpvCamAngle(void)
@@ -737,9 +740,9 @@ FAST_CODE void processRcCommand(void)
             calculateSetpointRate(axis);
         }
 
-        #ifdef USE_GYRO_IMUF9001
+#ifdef USE_GYRO_IMUF9001
         isSetpointNew = 1;
-        #endif
+#endif
         
         DEBUG_SET(DEBUG_RC_INTERPOLATION, 3, setpointRate[0]);
 

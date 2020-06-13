@@ -105,7 +105,7 @@ void mspSerialReleaseSharedTelemetryPorts(void) {
 }
 #endif
 
-static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint8_t c)
+static bool mspSerialProcessReceivedData(mspPort_t *mspPort, uint32_t c)
 {
     switch (mspPort->c_state) {
         default:
@@ -436,6 +436,12 @@ static void mspEvaluateNonMspData(mspPort_t * mspPort, uint8_t receivedChar)
         mspPort->pendingRequest = MSP_PENDING_BOOTLOADER_ROM;
 #ifdef USE_CLI
    } else if (receivedChar == '#') {
+        cliSmartMode = 0;
+        mspPort->pendingRequest = MSP_PENDING_CLI;
+        return;
+    }
+    if (receivedChar == '!') {
+        cliSmartMode = 1;
         mspPort->pendingRequest = MSP_PENDING_CLI;
 #endif
 #if defined(USE_FLASH_BOOT_LOADER)
@@ -505,7 +511,7 @@ void mspSerialProcess(mspEvaluateNonMspData_e evaluateNonMspData, mspProcessComm
 
         mspPostProcessFnPtr mspPostProcessFn = NULL;
 
-        if (serialRxBytesWaiting(mspPort->port)) {
+        if (!mspPort->pendingRequest && (mspPort->port)) {
             // There are bytes incoming - abort pending request
             mspPort->lastActivityMs = millis();
             mspPort->pendingRequest = MSP_PENDING_NONE;
