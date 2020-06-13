@@ -648,7 +648,7 @@ void validateAndFixGyroConfig(void)
         gyroConfigMutable()->imuf_mode = GTBCM_GYRO_ACC_FILTER_F;
      } else {
     */
-     //   gyroConfigMutable()->imuf_mode = GTBCM_DEFAULT;
+        gyroConfigMutable()->imuf_mode = GTBCM_DEFAULT;
     //}
 #endif
     // Prevent invalid notch cutoff
